@@ -20,8 +20,8 @@ resource "aws_security_group" "allowtraffic" {
 
 resource "aws_instance" "expense"{
     count = 3
-    ami             = data.aws_ami.joindevops.id
-    instance_type   = var.instance_type
+    ami             = local.ami_id
+    instance_type   = local.instance_type
     vpc_security_group_ids = [aws_security_group.allowtraffic.id]
     tags = merge(var.common_tags,{
         Name = var.instances[count.index]

@@ -3,8 +3,8 @@ resource "aws_security_group" "allowtraffic" {
   description = "allow all traffic"
 
   ingress  {
-    from_port   = 22
-    to_port     = 22
+    from_port   = var.from_port
+    to_port     = var.to_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -15,9 +15,15 @@ resource "aws_security_group" "allowtraffic" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+    tags = var.sgtags
+}
 
-  tags = {
-    name = "allowtraffic"
-    purpose = "allowing all traffic"
-  }
+resource "aws_instance" "expense"{
+    count = 3
+    ami             = data.aws_ami.joindevops.id
+    instance_type   = var.instance_type
+    vpc_security_group_ids = [aws_security_group.allowtraffic.id]
+    tags = merge(var.common_tags,{
+        Name = var.instances[count.index]
+    })
 }
